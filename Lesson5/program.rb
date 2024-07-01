@@ -261,9 +261,11 @@ class Program
     choice = make_choice.to_i
     case choice
       when 1
-        train.move_train_forward
+        train.go_next_station
+        puts "Train arrived at: #{train.current_station.name}"
       when 2
-        train.move_train_backward
+        train.go_previous_station
+        puts "Train arrived at: #{train.current_station.name}"
       when 0
         return
     end
@@ -300,7 +302,6 @@ class Program
         end
     end
   end
-
 
   def show_train_wagons(train)
     train.wagons.each_with_index { |wagon, index| puts "#{index + 1}. Wagon type: #{wagon.type}" }

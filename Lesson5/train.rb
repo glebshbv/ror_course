@@ -1,5 +1,5 @@
 class Train
-  attr_accessor :number_wagons, :current_station
+  attr_accessor :number_wagons
   attr_reader :train_number, :route, :wagons
 
   def initialize(train_number)
@@ -8,6 +8,7 @@ class Train
     @route = nil
     @current_station = nil
     @wagons = []
+    @current_station_index = 0
   end
 
   def accelerate(increment)
@@ -29,38 +30,16 @@ class Train
     @current_station.receive_train(self)
   end
 
-  def move_train_forward
-    puts "Moving forward"
-    index = @route.full_route.index(@current_station)
-    if index.nil? || index == @route.full_route.length - 1
-      puts "Already at the last station or current station not found in route"
-      return
-    end
-    new_index = index + 1
-    new_station = @route.full_route[new_index]
-    puts "New Station: #{new_station.name}"
-    @current_station.send_train(self)
-    @current_station = new_station
-    @current_station.receive_train(self)
-    puts "Moved to #{new_station.name}"
-    train_position
+  def current_station
+    @route.full_route[@current_station_index]
   end
 
-  def move_train_backward
-    puts "Moving backward"
-    index = @route.full_route.index(@current_station)
-    if index.nil? || index == 0
-      puts "Already at the first station or current station not found in route"
-      return
-    end
-    new_index = index - 1
-    new_station = @route.full_route[new_index]
-    puts "New Station: #{new_station.name}"
-    @current_station.send_train(self)
-    @current_station = new_station
-    @current_station.receive_train(self)
-    puts "Moved to #{new_station.name}"
-    train_position
+  def go_next_station
+    @current_station_index += 1 if next_station
+  end
+
+  def go_previous_station
+    @current_station_index -= 1 if previous_station
   end
 
   def add_wagon(wagon)
@@ -72,6 +51,14 @@ class Train
   end
 
   private
+
+  def next_station
+    @route.full_route[@current_station_index + 1]
+  end
+
+  def previous_station
+    @route.full_route[@current_station_index + 1]
+  end
 
   def train_position
     index = @route.full_route.index(@current_station)
