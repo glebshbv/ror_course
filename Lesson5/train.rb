@@ -24,100 +24,78 @@ class Train
 
   def add_route(route)
     @route = route
-    self.current_station = route.departure_station
+    @current_station = route.departure_station
+    puts "Current station of #{train_number} is #{@current_station.name}"
+    @current_station.receive_train(self)
   end
 
-  def train_position
-    unless @route
-      puts "Please assign a route to the train"
-    end
-
-    index = @route.full_route.index(self.current_station)
-    previous_station = @route.full_route[index - 1]
-    next_station = @route.full_route[index + 1]
-    return "Current station is: #{@current_station}, Previous station is #{previous_station}\
-    Next station is: #{next_station}"
-  end
-
-  def move_train(forward=true)
-    #if passed forward = false, this means moving train backwards
-    unless @route
-      puts "Please assign a route to the train"
+  def move_train_forward
+    puts "Moving forward"
+    index = @route.full_route.index(@current_station)
+    if index.nil? || index == @route.full_route.length - 1
+      puts "Already at the last station or current station not found in route"
       return
     end
-    index = @route.full_route.index(self.current_station)
-    if forward
-      new_index = index += 1
-      if new_index < @route.full_route.length
-        self.current_station = @route.full_route[new_index]
-      else
-        puts "This is the end of the route"
-      end
-    else
-      new_index = index -= 1
-      if new_index >= 0
-        self.current_station = @route.full_route[new_index]
-      else
-        puts "The train is the start of the route"
-      end
+    new_index = index + 1
+    new_station = @route.full_route[new_index]
+    puts "New Station: #{new_station.name}"
+    @current_station.send_train(self)
+    @current_station = new_station
+    @current_station.receive_train(self)
+    puts "Moved to #{new_station.name}"
+    train_position
+  end
+
+  def move_train_backward
+    puts "Moving backward"
+    index = @route.full_route.index(@current_station)
+    if index.nil? || index == 0
+      puts "Already at the first station or current station not found in route"
+      return
     end
+    new_index = index - 1
+    new_station = @route.full_route[new_index]
+    puts "New Station: #{new_station.name}"
+    @current_station.send_train(self)
+    @current_station = new_station
+    @current_station.receive_train(self)
+    puts "Moved to #{new_station.name}"
+    train_position
+  end
+
+  def add_wagon(wagon)
+    connect_wagon(wagon) if current_speed == 0
+  end
+
+  def remove_wagon(wagon)
+    disconnect_wagon(wagon)
   end
 
   private
 
-#Этот метод приватный потому что мы не можем дать возможность пользоваться конструктором для класса Train напрямую
-  def wagons_constructor(wagon)
+  def train_position
+    index = @route.full_route.index(@current_station)
+    previous_station = index > 0 ? @route.full_route[index - 1] : nil
+    next_station = index < @route.full_route.length - 1 ? @route.full_route[index + 1] : nil
+    puts "Current station is: #{@current_station.name}, Previous station is: #{previous_station&.name}, Next station is: #{next_station&.name}"
+  end
+
+  def connect_wagon(wagon)
     if current_speed == 0
       @wagons << wagon
+      puts "Wagon connected"
     else
       puts "The train #{@train_number} is not stationary"
     end
   end
 
-  def disconnect_wagon
-    if current_speed == 0 && !@wagons.empty?
-      @wagons.pop
+  def disconnect_wagon(wagon)
+    if wagons.include?(wagon)
+      wagons.delete(wagon)
+      puts "Wagon disconnected"
     else
-      puts "The train is either moving or has no wagons to remove"
+      puts "Wagon not found"
     end
   end
 
-end
-
-class PassengerTrain < Train
-
-  def connect_wagons(wagon)
-    if wagon.type == "passenger"
-      wagons_constructor(wagon)
-    else
-      puts "Wrong type of wagon"
-    end
-  end
-
-  def disconnect_wagons(wagon)
-    if wagon.type == "passenger"
-      disconnect_wagon(wagon)
-    else
-      puts "Wrong type of wagon"
-    end
-  end
-
-end
-
-class CargoTrain < Train
-  def connect_wagons(wagon)
-    if wagon.type == "cargo"
-      wagons_constructor(wagon)
-    else
-      puts "Wrong type of wagon"
-    end
-  end
-
-  def disconnect_wagons(wagon)
-    if wagon.type == "cargo"
-      disconnect_wagon(wagon)
-    else
-      puts "Wrong type of wagon"
-    end
-  end
 end
