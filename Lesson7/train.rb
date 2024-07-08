@@ -51,7 +51,6 @@ class Train
   def add_route(route)
     @route = route
     @current_station = route.departure_station
-    puts "Current station of #{train_number} is #{@current_station.name}"
     @current_station.receive_train(self)
   end
 
@@ -93,21 +92,11 @@ class Train
   end
 
   def connect_wagon(wagon)
-    if current_speed == 0
-      @wagons << wagon
-      puts "Wagon connected"
-    else
-      puts "The train #{@train_number} is not stationary"
-    end
+    @wagons << wagon if current_speed == 0
   end
 
   def disconnect_wagon(wagon)
-    if wagons.include?(wagon)
-      wagons.delete(wagon)
-      puts "Wagon disconnected"
-    else
-      puts "Wagon not found"
-    end
+    wagons.delete(wagon) if wagons.include?(wagon)
   end
 
 end
