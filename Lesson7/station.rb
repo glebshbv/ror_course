@@ -18,7 +18,7 @@ class Station
 
   def validate!
     raise StandardError, "Station name cannot be empty" if name.nil? || name.strip.empty?
-    raise StandardError, "Station name must be at least 2 characters long" if name.length < 2
+    raise StandardError, "Station name must be in the format 'AA'" unless name.match?(/\A[A-Z]{2}\z/)
   end
 
   def valid?

@@ -91,12 +91,18 @@ class Program
   end
 
   def create_station
+    begin
     puts "Type station name:"
-    set_station(make_choice.to_s)
+    station = Station.new(make_choice.to_s)
+    set_station(station) if station.valid?
+    rescue => e
+      puts e.message
+      retry
+    end
   end
 
-  def set_station(name)
-    @stations << Station.new(name)
+  def set_station(station)
+    @stations << station
   end
 
   def display_stations
@@ -115,6 +121,7 @@ class Program
       rescue StandardError => e
         puts "Error: #{e.message}"
         puts "Please try again."
+        retry
     end
   end
 
@@ -141,9 +148,21 @@ class Program
   end
 
   def create_route
-    return puts "Please add stations first." if display_stations.nil?
-    route = Route.new(assign_arrival_station, assign_departure_station)
-    set_transit_stations(route)
+    begin
+      return puts "Please add stations first." if display_stations.nil?
+      route = Route.new(assign_departure_station, assign_arrival_station)
+      if route.valid?
+        set_transit_stations(route)
+        assign_route(route)
+      end
+      rescue StandardError => e
+        puts "Error: #{e.message}"
+        puts "Please try again."
+        retry
+    end
+  end
+
+  def assign_route(route)
     @routes << route
   end
 
