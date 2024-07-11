@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Route
   include InstanceCounter
 
@@ -13,15 +15,15 @@ class Route
   end
 
   def validate!
-    raise StandardError, "Departure station cannot be nil" if departure_station.nil?
-    raise StandardError, "Arrival station cannot be nil" if arrival_station.nil?
-    raise StandardError, "Departure and arrival stations cannot be the same" if departure_station == arrival_station
+    raise StandardError, 'Departure station cannot be nil' if departure_station.nil?
+    raise StandardError, 'Arrival station cannot be nil' if arrival_station.nil?
+    raise StandardError, 'Departure and arrival stations cannot be the same' if departure_station == arrival_station
   end
 
   def valid?
     validate!
     true
-  rescue
+  rescue StandardError
     false
   end
 

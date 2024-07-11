@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'producer'
 require_relative 'instance_counter'
 require_relative 'route'
@@ -9,8 +11,6 @@ require_relative 'cargo_wagon'
 require_relative 'passenger_train'
 require_relative 'cargo_train'
 require_relative 'program'
-
-
 
 program = Program.new
 program.start

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module InstanceCounter
   def self.included(base)
     base.extend ClassMethods
@@ -23,14 +25,12 @@ module InstanceCounter
   end
 end
 
-
 class Train
   include InstanceCounter
 
   @@trains = {}
 
   class << self
-
     def find(number)
       @@trains[number]
     end
@@ -46,5 +46,4 @@ class Train
     @number = number
     @@trains[number] = self
   end
-
 end

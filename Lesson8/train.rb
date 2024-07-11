@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Train
   include Producer
   include InstanceCounter
@@ -9,7 +11,7 @@ class Train
   end
 
   attr_accessor :number_wagons
-  attr_reader :train_number, :route, :wagons
+  attr_reader :train_number, :route, :wagons, :current_speed
 
   def initialize(train_number)
     @train_number = train_number.to_s
@@ -24,24 +26,24 @@ class Train
   end
 
   def validate!
-    raise StandardError, "Train number must be in the format 'AAA-AA'" unless train_number.match?(/\A[a-zA-Z0-9]{3}-?[a-zA-Z0-9]{2}\z/)
-    raise StandardError, "Train type must be 'cargo' or 'passenger'" unless ['cargo', 'passenger'].include?(type)
+    unless train_number.match?(/\A[a-zA-Z0-9]{3}-?[a-zA-Z0-9]{2}\z/)
+      raise StandardError,
+            "Train number must be in the format 'AAA-AA'"
+    end
+    raise StandardError, "Train type must be 'cargo' or 'passenger'" unless %w[cargo passenger].include?(type)
+
     true
   end
 
   def valid?
     validate!
     true
-  rescue
+  rescue StandardError
     false
   end
 
   def accelerate(increment)
     @current_speed += increment
-  end
-
-  def current_speed
-    @current_speed
   end
 
   def brake
@@ -67,15 +69,15 @@ class Train
   end
 
   def add_wagon(wagon)
-    connect_wagon(wagon) if current_speed == 0
+    connect_wagon(wagon) if current_speed.zero?
   end
 
   def remove_wagon(wagon)
     disconnect_wagon(wagon)
   end
 
-  def each_wagon
-    @wagons.each_with_index { |wagon, index| yield(wagon, index) }
+  def each_wagon(&block)
+    @wagons.each_with_index(&block)
   end
 
   private
@@ -90,17 +92,16 @@ class Train
 
   def train_position
     index = @route.full_route.index(@current_station)
-    previous_station = index > 0 ? @route.full_route[index - 1] : nil
+    previous_station = index.positive? ? @route.full_route[index - 1] : nil
     next_station = index < @route.full_route.length - 1 ? @route.full_route[index + 1] : nil
-    puts "Current station is: #{@current_station.name}, Previous station is: #{previous_station&.name}, Next station is: #{next_station&.name}"
+    puts "Current station: #{@current_station.name}, Previous station: #{previous_station&.name}, Next station: #{next_station&.name}"
   end
 
   def connect_wagon(wagon)
-    @wagons << wagon if current_speed == 0
+    @wagons << wagon if current_speed.zero?
   end
 
   def disconnect_wagon(wagon)
     wagons.delete(wagon) if wagons.include?(wagon)
   end
-
 end

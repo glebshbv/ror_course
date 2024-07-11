@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Station
   include InstanceCounter
 
@@ -17,14 +19,14 @@ class Station
   end
 
   def validate!
-    raise StandardError, "Station name cannot be empty" if name.nil? || name.strip.empty?
+    raise StandardError, 'Station name cannot be empty' if name.nil? || name.strip.empty?
     raise StandardError, "Station name must be in the format 'AA'" unless name.match?(/\A[A-Z]{2}\z/)
   end
 
   def valid?
     validate!
     true
-  rescue
+  rescue StandardError
     false
   end
 
@@ -40,7 +42,7 @@ class Station
     @current_train_list.map(&:train_number)
   end
 
-  def each_train_on_station
-    @current_train_list.each { |train| yield(train) }
+  def each_train_on_station(&block)
+    @current_train_list.each(&block)
   end
 end

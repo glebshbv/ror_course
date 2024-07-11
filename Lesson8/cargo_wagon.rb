@@ -1,6 +1,7 @@
-class CargoWagon < Wagon
+# frozen_string_literal: true
 
-  attr_reader :total_volume
+class CargoWagon < Wagon
+  attr_reader :total_volume, :occupied_volume
 
   def initialize(total_volume)
     @total_volume = total_volume
@@ -8,12 +9,9 @@ class CargoWagon < Wagon
   end
 
   def reserve_volume(volume)
-    raise StandardError, "No more available volume" if @occupied_volume + volume > @total_volume
-    @occupied_volume += volume
-  end
+    raise StandardError, 'No more available volume' if @occupied_volume + volume > @total_volume
 
-  def occupied_volume
-    @occupied_volume
+    @occupied_volume += volume
   end
 
   def available_volume
@@ -21,6 +19,6 @@ class CargoWagon < Wagon
   end
 
   def type
-    "cargo"
+    'cargo'
   end
 end
